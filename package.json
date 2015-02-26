@@ -1,0 +1,21 @@
+{
+  "name": "es6-traits",
+  "version": "0.1.0",
+  "description": "",
+  "author": "G. Kay Lee <balancetraveller+github@gmail.com>",
+  "scripts": {
+    "setup": "npm cache clean && npm install"
+  },
+  "main": "es6-traits.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gsklee/es6-traits"
+  },
+  "keywords": [],
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "iojs": ">=1.0.0"
+  },
+  "license": "MIT"
+}
