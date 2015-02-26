@@ -1,0 +1,31 @@
+{
+  "name": "es6-traits",
+  "version": "0.1.0",
+  "description": "",
+  "author": "G. Kay Lee <balancetraveller+github@gmail.com>",
+  "scripts": {
+    "setup": "npm cache clean && npm install",
+    "build": "gulp build:scripts"
+  },
+  "main": "es6-traits.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gsklee/es6-traits"
+  },
+  "keywords": [],
+  "dependencies": {
+    "smart-mixin": "^1.1.0"
+  },
+  "devDependencies": {
+    "babel": "^4.5.5",
+    "gulp": "^3.8.11",
+    "gulp-load-plugins": "^0.8.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-babel": "^4.0.0",
+    "gulp-uglify": "^1.1.0"
+  },
+  "engines": {
+    "iojs": ">=1.0.0"
+  },
+  "license": "MIT"
+}
