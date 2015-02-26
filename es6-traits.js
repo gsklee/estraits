@@ -1,19 +1,28 @@
 import mixin from 'smart-mixin';
 
-export default function(registry) {
-  return function(BaseClass) {
-    const resolver = mixin({
-      componentWillMount: mixin.MANY,
-      componentDidMount: mixin.MANY,
-      componentWillReceiveProps: mixin.MANY,
-      shouldComponentUpdate: mixin.ONCE,
-      componentWillUpdate: mixin.MANY,
-      componentDidUpdate: mixin.MANY,
-      componentWillUnmount: mixin.MANY,
+export default function(registry, ruleset) {
+  var resolver = ruleset && mixin(Object.keys(ruleset).reduce((m, n) => {
+                                                        m[n] = mixin[ruleset[n]];
 
-      getInitialState: mixin.MANY_MERGED,
-      getDefaultProps: mixin.MANY_MERGED
-    });
+                                                        return m;
+                                                      }, {}));
+
+  return function(BaseClass) {
+    if (!resolver) {
+      resolver = mixin('ReactComponent' === BaseClass.name ? {
+                                                               componentWillMount: mixin.MANY,
+                                                               componentDidMount: mixin.MANY,
+                                                               componentWillReceiveProps: mixin.MANY,
+                                                               shouldComponentUpdate: mixin.ONCE,
+                                                               componentWillUpdate: mixin.MANY,
+                                                               componentDidUpdate: mixin.MANY,
+                                                               componentWillUnmount: mixin.MANY,
+
+                                                               getInitialState: mixin.MANY_MERGED,
+                                                               getDefaultProps: mixin.MANY_MERGED
+                                                             } : {
+                                                             });
+    }
 
     return function(descriptor) {
       const traits = descriptor[0].split(' ');
