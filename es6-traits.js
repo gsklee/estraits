@@ -31,7 +31,13 @@ export default function(registry, ruleset) {
         constructor(...args) {
           super(...args);
 
-          traits.map(x => resolver(this.constructor.prototype, registry[x]));
+          traits.map(x => {
+            const {constructor, ...methods} = registry[x];
+
+            'constructor' === constructor.name && constructor.call(this);
+
+            return resolver(this.constructor.prototype, methods);
+          });
         }
       }
     };
