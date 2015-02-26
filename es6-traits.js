@@ -1,44 +1,46 @@
 import mixin from 'smart-mixin';
 
+var cache = {};
+
 export default function(registry, ruleset) {
-  var resolver = ruleset && mixin(Object.keys(ruleset).reduce((m, n) => {
-                                                        m[n] = mixin[ruleset[n]];
-
-                                                        return m;
-                                                      }, {}));
-
   return function(BaseClass) {
-    if (!resolver) {
-      resolver = mixin('ReactComponent' === BaseClass.name ? {
-                                                               componentWillMount: mixin.MANY,
-                                                               componentDidMount: mixin.MANY,
-                                                               componentWillReceiveProps: mixin.MANY,
-                                                               shouldComponentUpdate: mixin.ONCE,
-                                                               componentWillUpdate: mixin.MANY,
-                                                               componentDidUpdate: mixin.MANY,
-                                                               componentWillUnmount: mixin.MANY,
-
-                                                               getInitialState: mixin.MANY_MERGED,
-                                                               getDefaultProps: mixin.MANY_MERGED
-                                                             } : {
-                                                             });
-    }
-
     return function(descriptor) {
-      const traits = descriptor[0].split(' ');
+      const traits = descriptor[0].split(' '),
+            cacheName = `${BaseClass.name}+${traits.sort().join('+')}`;
 
-      return class TraitsClass extends BaseClass {
-        constructor(...args) {
-          super(...args);
+      if (cache[cacheName]) {
+        return cache[cacheName];
+      } else {
+        return cache[cacheName] = class TraitsClass extends BaseClass {
+          constructor(...args) {
+            super(...args);
 
-          traits.map(x => {
-            const {constructor, ...methods} = registry[x];
+            traits.map(x => {
+              const {constructor, ...methods} = registry[x];
 
-            'constructor' === constructor.name && constructor.call(this);
+              'constructor' === constructor.name && constructor.call(this);
 
-            return resolver(this.constructor.prototype, methods);
-          });
-        }
+              return mixin(ruleset ? Object.keys(ruleset).reduce((m, n) => {
+                                                           m[n] = mixin[ruleset[n]];
+
+                                                           return m;
+                                                         }, {}) :
+                     'ReactComponent' === BaseClass.name ? {
+                                                             componentWillMount: mixin.MANY,
+                                                             componentDidMount: mixin.MANY,
+                                                             componentWillReceiveProps: mixin.MANY,
+                                                             shouldComponentUpdate: mixin.ONCE,
+                                                             componentWillUpdate: mixin.MANY,
+                                                             componentDidUpdate: mixin.MANY,
+                                                             componentWillUnmount: mixin.MANY,
+
+                                                             getInitialState: mixin.MANY_MERGED,
+                                                             getDefaultProps: mixin.MANY_MERGED
+                                                           } :
+                     {})(this.constructor.prototype, methods);
+            });
+          }
+        };
       }
     };
   };
