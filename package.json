@@ -4,7 +4,8 @@
   "description": "",
   "author": "G. Kay Lee <balancetraveller+github@gmail.com>",
   "scripts": {
-    "setup": "npm cache clean && npm install"
+    "setup": "npm cache clean && npm install",
+    "build": "gulp build:scripts"
   },
   "main": "es6-traits.min.js",
   "repository": {
@@ -15,7 +16,14 @@
   "dependencies": {
     "smart-mixin": "^1.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel": "^4.5.5",
+    "gulp": "^3.8.11",
+    "gulp-load-plugins": "^0.8.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-babel": "^4.0.0",
+    "gulp-uglify": "^1.1.0"
+  },
   "engines": {
     "iojs": ">=1.0.0"
   },
