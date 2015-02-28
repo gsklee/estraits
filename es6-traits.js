@@ -1,10 +1,15 @@
 import mixin from 'smart-mixin';
 
-var cache = {};
+var cache = {},
+    BaseClass;
 
 export default function(registry, ruleset) {
-  return function(BaseClass) {
-    return function(descriptor) {
+  return {
+    on(baseclass) {
+      BaseClass = baseclass;
+    },
+
+    using(descriptor) {
       const traits = descriptor[0].split(' '),
             cacheName = `${BaseClass.name}+${traits.sort().join('+')}`;
 
@@ -42,6 +47,6 @@ export default function(registry, ruleset) {
           }
         };
       }
-    };
+    }
   };
 }
