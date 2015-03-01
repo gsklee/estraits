@@ -11,7 +11,7 @@ export default function(registry, ruleset) {
 
     using(descriptor) {
       const traits = descriptor[0].split(' '),
-            cacheName = `${BaseClass.name}+${traits.sort().join('+')}`;
+            cacheName = `${BaseClass.name}+${traits.join('+')}`;
 
       if (cache[cacheName]) {
         return cache[cacheName];
