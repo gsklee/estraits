@@ -3,7 +3,24 @@ import mixin from 'smart-mixin';
 var cache = {},
     BaseClass;
 
-export default function(registry, {ruleset, naming = true} = {}) {
+export default function(registry, {
+  naming = false,
+
+  ruleset = {
+    ReactComponent: {
+      componentWillMount: 'MANY',
+      componentDidMount: 'MANY',
+      componentWillReceiveProps: 'MANY',
+      shouldComponentUpdate: 'ONCE',
+      componentWillUpdate: 'MANY',
+      componentDidUpdate: 'MANY',
+      componentWillUnmount: 'MANY',
+
+      getInitialState: 'MANY_MERGED',
+      getDefaultProps: 'MANY_MERGED'
+    }
+  }
+} = {}) {
   return {
     on(baseclass) {
       BaseClass = baseclass;
@@ -25,24 +42,13 @@ export default function(registry, {ruleset, naming = true} = {}) {
 
               'constructor' === constructor.name && constructor.call(this);
 
-              return mixin(ruleset ? Object.keys(ruleset).reduce((m, n) => {
-                                                           m[n] = mixin[ruleset[n]];
+              return mixin(ruleset[BaseClass.name] ? Object.keys(ruleset[BaseClass.name])
+                                                           .reduce((m, n) => {
+                                                             m[n] = mixin[ruleset[BaseClass.name][n]];
 
-                                                           return m;
-                                                         }, {}) :
-                     'ReactComponent' === BaseClass.name ? {
-                                                             componentWillMount: mixin.MANY,
-                                                             componentDidMount: mixin.MANY,
-                                                             componentWillReceiveProps: mixin.MANY,
-                                                             shouldComponentUpdate: mixin.ONCE,
-                                                             componentWillUpdate: mixin.MANY,
-                                                             componentDidUpdate: mixin.MANY,
-                                                             componentWillUnmount: mixin.MANY,
-
-                                                             getInitialState: mixin.MANY_MERGED,
-                                                             getDefaultProps: mixin.MANY_MERGED
-                                                           } :
-                     {})(this.constructor.prototype, methods);
+                                                             return m;
+                                                           }, {}) :
+                           {})(this.constructor.prototype, methods);
             });
           }
         }
