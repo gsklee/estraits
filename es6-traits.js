@@ -4,9 +4,10 @@ var cache = {},
     BaseClass;
 
 export default function(registry, {
-  naming = false,
-
-  ruleset = {
+  ruleset = {},
+  naming = false
+} = {}) {
+  Object.assign(ruleset, {
     ReactComponent: {
       componentWillMount: 'MANY',
       componentDidMount: 'MANY',
@@ -19,8 +20,8 @@ export default function(registry, {
       getInitialState: 'MANY_MERGED',
       getDefaultProps: 'MANY_MERGED'
     }
-  }
-} = {}) {
+  });
+
   return {
     on(baseclass) {
       BaseClass = baseclass;
