@@ -10,6 +10,6 @@ Gulp.task('build:scripts',
               loose: 'all',
               experimental: true
             }))
-            .pipe($.uglify())
+            //.pipe($.uglify())
             .pipe(Gulp.dest('.'))
 );
