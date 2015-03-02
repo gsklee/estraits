@@ -3,7 +3,7 @@ import mixin from 'smart-mixin';
 var cache = {},
     BaseClass;
 
-export default function(registry, ruleset) {
+export default function(registry, {ruleset, naming = true} = {}) {
   return {
     on(baseclass) {
       BaseClass = baseclass;
@@ -11,12 +11,12 @@ export default function(registry, ruleset) {
 
     using(descriptor) {
       const traits = descriptor[0].split(' '),
-            cacheName = `${BaseClass.name}+${traits.join('+')}`;
+            traitsClassName = `${BaseClass.name}_with_${traits.join('_and_')}`;
 
-      if (cache[cacheName]) {
-        return cache[cacheName];
+      if (cache[traitsClassName]) {
+        return cache[traitsClassName];
       } else {
-        return cache[cacheName] = class TraitsClass extends BaseClass {
+        class TraitsClass extends BaseClass {
           constructor(...args) {
             super(...args);
 
@@ -45,7 +45,16 @@ export default function(registry, ruleset) {
                      {})(this.constructor.prototype, methods);
             });
           }
-        };
+        }
+
+        naming && eval(`TraitsClass = (function (BaseClass) {
+                          ${TraitsClass.toString().split('TraitsClass').join(traitsClassName)}
+                          _inherits(${traitsClassName}, BaseClass);
+
+                          return ${traitsClassName};
+                        })(BaseClass);`);
+
+        return cache[traitsClassName] = TraitsClass;
       }
     }
   };
