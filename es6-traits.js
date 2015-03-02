@@ -55,7 +55,7 @@ export default function(registry, {
 
               'constructor' === constructor.name && constructor.call(this);
 
-              return mixin(ruleset[BaseClass.name] || {})(this.constructor.prototype, methods);
+              mixin(ruleset[BaseClass.name] || {})(this.constructor.prototype, methods);
             });
           }
         }
