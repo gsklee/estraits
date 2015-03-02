@@ -7,18 +7,30 @@ export default function(registry, {
   ruleset = {},
   naming = false
 } = {}) {
+  ruleset = Object.keys(ruleset)
+                  .reduce((mixinRuleset, classRule) => {
+                    mixinRuleset[classRule] = Object.keys(ruleset[classRule])
+                                                    .reduce((mixinClassRuleset, methodRule) => {
+                                                      mixinClassRuleset[methodRule] = mixin[ruleset[classRule][methodRule]];
+
+                                                      return mixinClassRuleset;
+                                                    }, {});
+
+                    return mixinRuleset;
+                  }, {});
+
   Object.assign(ruleset, {
     ReactComponent: {
-      componentWillMount: 'MANY',
-      componentDidMount: 'MANY',
-      componentWillReceiveProps: 'MANY',
-      shouldComponentUpdate: 'ONCE',
-      componentWillUpdate: 'MANY',
-      componentDidUpdate: 'MANY',
-      componentWillUnmount: 'MANY',
+      componentWillMount: mixin.MANY,
+      componentDidMount: mixin.MANY,
+      componentWillReceiveProps: mixin.MANY,
+      shouldComponentUpdate: mixin.ONCE,
+      componentWillUpdate: mixin.MANY,
+      componentDidUpdate: mixin.MANY,
+      componentWillUnmount: mixin.MANY,
 
-      getInitialState: 'MANY_MERGED',
-      getDefaultProps: 'MANY_MERGED'
+      getInitialState: mixin.MANY_MERGED,
+      getDefaultProps: mixin.MANY_MERGED
     }
   });
 
@@ -43,13 +55,7 @@ export default function(registry, {
 
               'constructor' === constructor.name && constructor.call(this);
 
-              return mixin(ruleset[BaseClass.name] ? Object.keys(ruleset[BaseClass.name])
-                                                           .reduce((m, n) => {
-                                                             m[n] = mixin[ruleset[BaseClass.name][n]];
-
-                                                             return m;
-                                                           }, {}) :
-                           {})(this.constructor.prototype, methods);
+              return mixin(ruleset[BaseClass.name] || {})(this.constructor.prototype, methods);
             });
           }
         }
