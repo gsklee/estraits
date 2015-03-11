@@ -1,23 +1,20 @@
 import mixin from 'smart-mixin';
 
+const objectMap = (object, transformation) => Object.keys(object)
+                                                    .reduce((m, n) => {
+                                                      m[n] = transformation(object[n]);
+
+                                                      return m;
+                                                    }, {});
+
 var cache = {},
     BaseClass;
 
-export default function(registry, {
+export default function({
   ruleset = {},
   naming = false
 } = {}) {
-  ruleset = Object.keys(ruleset)
-                  .reduce((mixinRuleset, classRule) => {
-                    mixinRuleset[classRule] = Object.keys(ruleset[classRule])
-                                                    .reduce((mixinClassRuleset, methodRule) => {
-                                                      mixinClassRuleset[methodRule] = mixin[ruleset[classRule][methodRule]];
-
-                                                      return mixinClassRuleset;
-                                                    }, {});
-
-                    return mixinRuleset;
-                  }, {});
+  ruleset = objectMap(ruleset, x => objectMap(x, y => mixin[y]));
 
   Object.assign(ruleset, {
     ReactComponent: {
@@ -39,9 +36,8 @@ export default function(registry, {
       BaseClass = baseclass;
     },
 
-    using(descriptor) {
-      const traits = descriptor[0].split(' '),
-            traitsClassName = `${BaseClass.name}_with_${traits.join('_and_')}`;
+    using(...traits) {
+      const traitsClassName = `${BaseClass.name}_with_${traits.map(x => x.toString().slice(8, -1)).join('_and_').replace(' ', '_')}`;
 
       if (cache[traitsClassName]) {
         return cache[traitsClassName];
@@ -50,9 +46,7 @@ export default function(registry, {
           constructor(...args) {
             super(...args);
 
-            traits.map(x => {
-              const {constructor, ...methods} = registry[x];
-
+            traits.map(({constructor, ...methods}) => {
               'constructor' === constructor.name && constructor.call(this);
 
               mixin(ruleset[BaseClass.name] || {})(this.constructor.prototype, methods);
