@@ -1,5 +1,12 @@
 import mixin from 'smart-mixin';
 
+const objectMap = (object, transformation) => Object.keys(object)
+                                                    .reduce((m, n) => {
+                                                      m[n] = transformation(object[n]);
+
+                                                      return m;
+                                                    }, {});
+
 var cache = {},
     BaseClass;
 
@@ -7,17 +14,7 @@ export default function({
   ruleset = {},
   naming = false
 } = {}) {
-  ruleset = Object.keys(ruleset)
-                  .reduce((mixinRuleset, classRuleset) => {
-                    mixinRuleset[classRuleset] = Object.keys(ruleset[classRuleset])
-                                                       .reduce((mixinClassRuleset, methodRule) => {
-                                                         mixinClassRuleset[methodRule] = mixin[ruleset[classRuleset][methodRule]];
-
-                                                         return mixinClassRuleset;
-                                                       }, {});
-
-                    return mixinRuleset;
-                  }, {});
+  ruleset = objectMap(ruleset, x => objectMap(x, y => mixin[y]));
 
   Object.assign(ruleset, {
     ReactComponent: {
