@@ -3,7 +3,7 @@ import mixin from 'smart-mixin';
 var cache = {},
     BaseClass;
 
-export default function(registry, {
+export default function({
   ruleset = {},
   naming = false
 } = {}) {
@@ -39,9 +39,8 @@ export default function(registry, {
       BaseClass = baseclass;
     },
 
-    using(descriptor) {
-      const traits = descriptor[0].split(' '),
-            traitsClassName = `${BaseClass.name}_with_${traits.join('_and_')}`;
+    using(...traits) {
+      const traitsClassName = `${BaseClass.name}_with_${traits.map(x => x.toString().slice(8, -1)).join('_and_').replace(' ', '_')}`;
 
       if (cache[traitsClassName]) {
         return cache[traitsClassName];
@@ -51,7 +50,7 @@ export default function(registry, {
             super(...args);
 
             traits.map(x => {
-              const {constructor, ...methods} = registry[x];
+              const {constructor, ...methods} = x;
 
               'constructor' === constructor.name && constructor.call(this);
 
