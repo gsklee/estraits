@@ -31,12 +31,30 @@ export default function({
     }
   });
 
+  let onCalled = false;
+  let usingCalled = false;
+  const throwDuplicateCallError = (name) => {
+    throw new RangeError(`traits().${name} may only be called once.  Create a new on/using pair for each class`);
+  };
+
   return {
     on(baseclass) {
+      if (onCalled) {
+        throwDuplicateCallError('on');
+      } else {
+        onCalled = true;
+      }
+
       BaseClass = baseclass;
     },
 
     using(...traits) {
+      if (usingCalled) {
+        throwDuplicateCallError('using');
+      } else {
+        usingCalled = true;
+      }
+
       const traitsClassName = `${BaseClass.name}_with_${traits.map(x => x.toString().slice(8, -1)).join('_and_').replace(' ', '_')}`;
 
       if (cache[traitsClassName]) {
