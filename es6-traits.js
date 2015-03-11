@@ -8,13 +8,13 @@ export default function({
   naming = false
 } = {}) {
   ruleset = Object.keys(ruleset)
-                  .reduce((mixinRuleset, classRule) => {
-                    mixinRuleset[classRule] = Object.keys(ruleset[classRule])
-                                                    .reduce((mixinClassRuleset, methodRule) => {
-                                                      mixinClassRuleset[methodRule] = mixin[ruleset[classRule][methodRule]];
+                  .reduce((mixinRuleset, classRuleset) => {
+                    mixinRuleset[classRuleset] = Object.keys(ruleset[classRuleset])
+                                                       .reduce((mixinClassRuleset, methodRule) => {
+                                                         mixinClassRuleset[methodRule] = mixin[ruleset[classRuleset][methodRule]];
 
-                                                      return mixinClassRuleset;
-                                                    }, {});
+                                                         return mixinClassRuleset;
+                                                       }, {});
 
                     return mixinRuleset;
                   }, {});
@@ -49,9 +49,7 @@ export default function({
           constructor(...args) {
             super(...args);
 
-            traits.map(x => {
-              const {constructor, ...methods} = x;
-
+            traits.map(({constructor, ...methods}) => {
               'constructor' === constructor.name && constructor.call(this);
 
               mixin(ruleset[BaseClass.name] || {})(this.constructor.prototype, methods);
