@@ -1,4 +1,5 @@
-# es6-traits
+ESTraits
+========
 
 I'll find some time to come up with a proper doc. Meanwhile, here's a short example:
 
