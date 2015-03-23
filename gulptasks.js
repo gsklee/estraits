@@ -4,12 +4,11 @@ import $ from 'gulp-load-plugins';
 $ = $();
 
 Gulp.task('build:scripts',
-  () => Gulp.src('es6-traits.js')
-            .pipe($.rename('es6-traits.min.js'))
+  () => Gulp.src('estraits.babel.js')
+            .pipe($.rename('estraits.js'))
             .pipe($.babel({
               loose: 'all',
               experimental: true
             }))
-            //.pipe($.uglify())
             .pipe(Gulp.dest('.'))
 );
