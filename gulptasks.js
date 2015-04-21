@@ -1,14 +1,14 @@
 import Gulp from 'gulp';
-import $ from 'gulp-load-plugins';
+import GulpLoadPlugins from 'gulp-load-plugins';
 
-$ = $();
+const _ = GulpLoadPlugins();
 
 Gulp.task('build:scripts',
   () => Gulp.src('estraits.babel.js')
-            .pipe($.rename('estraits.js'))
-            .pipe($.babel({
-              loose: 'all',
-              experimental: true
+            .pipe(_.rename('estraits.js'))
+            .pipe(_.babel({
+              stage: 0,
+              loose: 'all'
             }))
             .pipe(Gulp.dest('.'))
 );
